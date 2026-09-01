@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YEEE | VISUAL ARTIST</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    
+    <link rel="preload" as="image" href="Background/IMG_3832.JPEG" fetchpriority="high">
+
+    <style>
+        /* --- V7.0 風格定義 --- */
+        :root {
+            --bg-color: #0c0c0c; 
+            --text-white: #ffffff;
+            --text-grey: #888888;
+            --accent: #ffffff;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; background-color: var(--bg-color); }
+
+        body {
+            font-family: 'Roboto', 'Noto Sans TC', sans-serif;
+            margin: 0; padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-white);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, .filter-btn, .footer-logo {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+        }
+
+        /* 導覽列 */
+        nav {
+            position: fixed; top: 0; left: 0; width: 100%;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 50px; z-index: 100;
+            background: linear-gradient(to bottom, rgba(12,12,12,0.95), rgba(12,12,12,0));
+        }
+
+        .logo { font-size: 24px; font-weight: 700; letter-spacing: 2px; color: #fff; }
+        .menu a { color: #fff; text-decoration: none; margin-left: 30px; font-size: 14px; letter-spacing: 1px; font-family: 'Oswald', sans-serif; opacity: 0.7; transition: opacity 0.3s; cursor: pointer; }
+        .menu a:hover { opacity: 1; }
+
+        /* --- Hero 區域 --- */
+        .hero {
+            height: 75vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: var(--bg-color);
+        }
+
+        .hero-bg-slider { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        
+        .hero-slide { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            object-fit: cover; 
+            opacity: 0; transition: opacity 2s ease-in-out; 
+            display: block; 
+        }
+        .hero-slide.active { opacity: 1; }
+
+        .hero-overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), var(--bg-color)); 
+            z-index: 1; 
+        }
+
+        .hero-content { position: relative; z-index: 2; padding: 0 50px; }
+        
+        .hero-title {
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 700; line-height: 0.9; margin: 0;
+            color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.9);
+            transition: 0.5s; cursor: default;
+        }
+        .hero-title:hover { color: #fff; -webkit-text-stroke: 0; }
+        .hero-subtitle { margin-top: 20px; font-size: 1rem; color: rgba(255,255,255,0.8); letter-spacing: 4px; max-width: 700px; }
+
+        /* --- 篩選列 --- */
+        .filter-section {
+            padding: 40px 50px 20px 50px; 
+            display: flex; gap: 20px; flex-wrap: wrap; align-items: center;
+            margin-bottom: 20px;
+            background-color: var(--bg-color);
+        }
+
+        .filter-btn { background: none; border: none; color: var(--text-grey); font-size: 15px; cursor: pointer; letter-spacing: 1px; padding: 0; transition: color 0.3s; position: relative; }
+        .filter-btn.about-btn { color: #fff; font-weight: 500; }
+        .separator { color: #444; font-size: 14px; margin: 0 5px; font-family: 'Oswald', sans-serif; }
+        .filter-btn.active, .filter-btn:hover { color: var(--text-white); }
+        .filter-btn.active { font-weight: bold; border-bottom: 1px solid #fff; }
+
+        /* Gallery Grid */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 2px; padding: 0 50px 100px 50px; min-height: 50vh; background-color: var(--bg-color); }
+        .project-card { position: relative; aspect-ratio: 16/9; background: #000; overflow: hidden; cursor: pointer; }
+        
+        .media-layer { width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .media-layer img, .media-layer video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: opacity 0.3s; display: block; }
+        
+        /* 標題覆蓋層 */
+        .info-overlay { 
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 30px; 
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); 
+            transform: translateY(20px); opacity: 0; transition: all 0.4s ease; 
+        }
+        
+        /* 電腦版 Hover 效果 */
+        @media (min-width: 769px) {
+            .project-card:hover .media-layer { transform: scale(1.05); }
+            /* Hover 時影片變亮 */
+            .project-card:hover .media-layer img, .project-card:hover .media-layer video { opacity: 1; }
+            .project-card:hover .info-overlay { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-type { font-size: 12px; color: var(--text-grey); letter-spacing: 2px; margin-bottom: 5px; display: block; }
+        .card-title { font-size: 24px; font-weight: 500; margin: 0; letter-spacing: 1px; font-family: 'Oswald', sans-serif; }
+
+        /* Footer */
+        footer { background-color: var(--bg-color); padding: 80px 50px 40px 50px; margin-top: auto; position: relative; border: none; }
+        .footer-container { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 40px; }
+        .footer-left { display: flex; flex-direction: column; }
+        .footer-logo { font-size: 1.8rem; line-height: 1.1; letter-spacing: 1px; margin-bottom: 5px; color: #fff; }
+        .footer-zh { font-size: 0.9rem; letter-spacing: 2px; color: #ccc; margin-bottom: 40px; font-family: 'Noto Sans TC', sans-serif; }
+        .copyright { font-size: 0.75rem; color: #555; letter-spacing: 0.5px; }
+        .footer-right { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+        .social-icons { display: flex; gap: 15px; margin-bottom: 25px; }
+        .social-link { width: 40px; height: 40px; background-color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: transform 0.3s; text-decoration: none; }
+        .social-link:hover { transform: translateY(-3px); }
+        .social-link svg { width: 18px; height: 18px; fill: #000; }
+        .contact-label { font-size: 0.8rem; color: #666; margin-bottom: 5px; letter-spacing: 1px; }
+        .contact-info { font-size: 0.9rem; color: #999; letter-spacing: 1px; line-height: 1.6; text-decoration: none; display: block; }
+        .contact-info:hover { color: #fff; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: none; opacity: 0; transition: opacity 0.3s; overflow-y: auto; }
+        .modal-container { width: 100%; max-width: 900px; margin: 80px auto; padding: 0 20px; color: #fff; position: relative; }
+        /* 這裡一定要有 white-space: pre-line; */
+        .modal-content-body { font-size: 1.1rem; line-height: 1.8; color: #ccc; margin-bottom: 50px; max-width: 800px; white-space: pre-line; }
+        
+        /* --- 🌟 新增：內文小標題樣式 --- */
+        .modal-content-subtitle { 
+            font-size: 1.35rem; 
+            color: #fff; 
+            font-weight: 500; 
+            margin-top: 35px; 
+            margin-bottom: 5px; 
+            padding-left: 12px; 
+            border-left: 3px solid var(--accent); 
+            letter-spacing: 1px; 
+            font-family: 'Noto Sans TC', sans-serif;
+            line-height: 1.4;
+        }
+
+        .close-btn { position: fixed; top: 30px; right: 30px; font-size: 40px; background: none; border: none; color: #fff; cursor: pointer; z-index: 1001; }
+        .modal-header-large { font-size: 3rem; font-family: 'Oswald', sans-serif; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 20px; }
+        .modal-meta { display: flex; gap: 30px; color: var(--text-grey); font-size: 0.9rem; margin-bottom: 40px; }
+        
+        .modal-gallery img, .modal-gallery video { width: 100%; margin-bottom: 20px; display: block; }
+        
+        .yt-btn { display: inline-block; border: 1px solid #fff; color: #fff; padding: 15px 40px; text-decoration: none; font-family: 'Oswald', sans-serif; letter-spacing: 2px; transition: 0.3s; margin-top: 30px; margin-bottom: 50px; text-transform: uppercase; width: 100%; text-align: center; cursor: pointer; }
+        .yt-btn:hover { background: #fff; color: #000; }
+        .about-modal-layout { display: flex; gap: 40px; flex-wrap: wrap; }
+        .about-modal-img { flex: 1; min-width: 300px; }
+        .about-modal-img img { width: 100%; filter: grayscale(100%); }
+        .about-modal-text { flex: 2; }
+
+        /* --- 📱 手機版專屬優化 --- */
+        @media (max-width: 768px) {
+            nav { padding: 15px 20px; }
+            .logo { font-size: 20px; }
+            .menu a { margin-left: 15px; font-size: 12px; }
+            .hero-title { font-size: 4rem; } 
+            .hero-content { padding: 0 20px; }
+            .filter-section { padding: 30px 20px; gap: 15px; }
+            .filter-btn { font-size: 13px; padding: 5px 0; }
+            .gallery-grid { grid-template-columns: 1fr; padding: 0 20px 50px 20px; }
+            
+            .info-overlay {
+                opacity: 1; 
+                transform: translateY(0);
+                background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); 
+                padding: 20px;
+            }
+            .media-layer img, .media-layer video { opacity: 0.85; }
+            
+            .footer-container { flex-direction: column; align-items: flex-start; gap: 40px; }
+            .footer-right { align-items: flex-start; text-align: left; }
+            footer { padding: 50px 20px; }
+            .modal-container { margin: 60px auto; }
+            .modal-header-large { font-size: 2rem; }
+            .about-modal-layout { flex-direction: column; gap: 20px; }
+            .about-modal-img { min-width: 100%; }
+        }
+
+        /* --- 圖片預先下載與 Loading 視覺特效 --- */
+        .img-loading-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #1c1c1c; /* 作為暫時的 Placeholder 底色 */
+            overflow: hidden;
+        }
+
+        /* [關鍵修復] 確保 Loading 容器在 Hero Slider 中保持原本的絕對定位，不被 relative 覆蓋 */
+        .hero-slide.img-loading-container {
+            position: absolute;
+        }
+
+        /* 圖片未載入前的模糊與隱藏狀態 */
+        .img-loading-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0; /* 隱藏逐步下載過程 */
+            filter: blur(20px);
+            transform: scale(1.1);
+            transition: opacity 0.8s ease-out, filter 0.8s ease-out, transform 0.8s ease-out;
+            display: block;
+        }
+
+        /* 圖片 100% 載入完成後的清晰狀態 */
+        .img-loading-container.loaded img {
+            opacity: 1;
+            filter: blur(0);
+            transform: scale(1);
+        }
+
+        /* 半透明毛玻璃 (Frosted Glass) Loading 遮罩 */
+        .blur-placeholder.frosted-glass {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.08); /* 避免純黑色，帶點微光 */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 2;
+            transition: opacity 0.8s ease-in-out;
+            pointer-events: none;
+        }
+
+        /* 圖片載入完成，毛玻璃淡出消失 */
+        .img-loading-container.loaded .blur-placeholder.frosted-glass {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* --- 針對原本各區塊的樣式兼容與覆蓋 --- */
+        /* Gallery Hover 特殊處理 (延續原本的 0.7 透明度設定) */
+        .project-card .img-loading-container.loaded img { opacity: 0.7; }
+        @media (min-width: 769px) {
+            .project-card:hover .img-loading-container.loaded img { opacity: 1 !important; }
+        }
+
+        /* Modal 彈窗內的圖片間距處理 */
+        .modal-img-wrapper { margin-bottom: 20px; border-radius: 4px; }
+        .modal-img-wrapper img { margin-bottom: 0 !important; }
+
+        /* About 彈窗內的灰階濾鏡兼容 */
+        .about-modal-img .img-loading-container.loaded img { filter: grayscale(100%) blur(0); }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">YEEE.</div>
+    <div class="menu">
+        <a href="#works">PROJECTS</a>
+        <a onclick="openAboutModal()">ABOUT ME</a>
+    </div>
+</nav>
+
+<div class="hero">
+    <div class="hero-bg-slider" id="heroBgSlider"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title">VISUAL NARRATIVE<br>& DESIGN</h1>
+        <div class="hero-subtitle">
+            STORYBOARD / CHARACTER / 3D ART / ILLUSTRATION
+        </div>
+    </div>
+</div>
+
+<div class="filter-section" id="works">
+    <button class="filter-btn about-btn" onclick="openAboutModal()">ABOUT</button>
+    <span class="separator">/</span>
+    <button class="filter-btn active" onclick="filterProjects('all')">ALL</button>
+    <button class="filter-btn" onclick="filterProjects('work')">WORK</button>
+    <button class="filter-btn" onclick="filterProjects('3d')">3D ART</button>
+    <button class="filter-btn" onclick="filterProjects('storyboard')">STORYBOARD</button>
+    <button class="filter-btn" onclick="filterProjects('character')">CHARACTER</button>
+    <button class="filter-btn" onclick="filterProjects('scene')">SCENE</button>
+    <button class="filter-btn" onclick="filterProjects('illustration')">ILLUSTRATION</button>
+</div>
+
+<main class="gallery-grid" id="galleryContainer"></main>
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-left">
+            <div class="footer-logo">YEEE.</div>
+            <div class="footer-zh">田繁易個人作品集</div>
+            <div class="copyright">© 2023-2025 YEEE All Rights Reserved</div>
+        </div>
+        <div class="footer-right">
+            <div class="social-icons">
+                <a href="https://www.facebook.com/ye.yi.yi.233045" target="_blank" class="social-link"><svg viewBox="0 0 24 24"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.15 5.96C15.21 5.96 16.12 6.04 16.12 6.04V8.51H15.01C13.77 8.51 13.38 9.28 13.38 10.07V12.06H16.16L15.72 14.96H13.38V21.96C18.16 21.21 21.82 17.06 21.82 12.06C21.82 6.53 17.32 2.04 12 2.04Z"/></svg></a>
+                <a href="https://www.instagram.com/yeee.0413?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="social-link"><svg viewBox="0 0 24 24"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M19,5A1,1 0 0,1 20,6A1,1 0 0,1 19,7A1,1 0 0,1 18,6A1,1 0 0,1 19,5Z" /></svg></a>
+                <a href="https://youtube.com/@yeee-h3d?si=HJiVyQ6-vUbY-lUe" target="_blank" class="social-link"><svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></a>
+            </div>
+            <div class="contact-label">Contact.</div>
+            <a href="mailto:ft60315@gmail.com" class="contact-info">ft60315@gmail.com</a>
+            <div class="contact-info">+886-9-0618-2941</div>
+        </div>
+    </div>
+</footer>
+
+<div class="modal-overlay" id="projectModal">
+    <button class="close-btn" onclick="closeModal()">×</button>
+    <div class="modal-container"><div id="modalBody"></div></div>
+</div>
+
+<script>
+    /* Category Sorting Order */
+    const categorySortOrder = ['3d', 'character','storyboard',  'scene', 'illustration', 'work'];
+
+    /* --- 1. Background Slider --- */
+    const heroBackgrounds = [
+        { type: 'image', src: 'Background/IMG_3832.JPEG' },
+        { type: 'image', src: 'Background/IMG_6123.JPEG' }, 
+        { type: 'image', src: 'Background/IMG_9363(1).JPEG' },
+        { type: 'image', src: 'Background/IMG_9951.JPEG' },
+        { type: 'image', src: 'Background/2.JPG' }, 
+        { type: 'image', src: 'Background/7 105606.PNG' }, 
+        { type: 'image', src: 'Background/IMG_6302.JPEG' },
+        { type: 'image', src: 'Background/39.JPG' },
+        { type: 'image', src: 'Background/1.JPG' },
+        { type: 'image', src: 'Background/4851.PNG' },
+        { type: 'video', src: 'Background/The Last Duel.MP4', poster: 'Background/17 113403.JPG' } ,
+        { type: 'video', src: 'Background/The Last Duel_2.MP4', poster: 'Background/123.PNG' } 
+    ];
+
+    const sliderContainer = document.getElementById('heroBgSlider');
+    let currentSlideIndex = 0;
+    
+    if (sliderContainer) {
+        heroBackgrounds.forEach((bg, index) => {
+            let element;
+            if (bg.type === 'video') {
+                element = document.createElement('video');
+                element.src = bg.src;
+                if(bg.poster) element.poster = bg.poster; 
+                element.muted = true; element.loop = true; element.playsInline = true; element.autoplay = true; 
+                element.play().catch(e => console.log("Autoplay blocked"));
+                element.className = 'hero-slide';
+                if (index === 0) element.classList.add('active');
+                sliderContainer.appendChild(element);
+            } else {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'hero-slide img-loading-container';
+                if (index === 0) wrapper.classList.add('active');
+
+                const glass = document.createElement('div');
+                glass.className = 'blur-placeholder frosted-glass';
+
+                element = document.createElement('img');
+                
+                if (index === 0) {
+                    element.setAttribute('fetchpriority', 'high');
+                    element.loading = 'eager'; 
+                } else {
+                    // [關鍵修復]：Hero 圖片即使隱藏，也要確保能順暢下載
+                    element.setAttribute('fetchpriority', 'low');
+                    element.loading = 'eager'; 
+                }
+                
+                element.onload = () => wrapper.classList.add('loaded');
+                element.src = bg.src;
+
+                wrapper.appendChild(glass);
+                wrapper.appendChild(element);
+                sliderContainer.appendChild(wrapper);
+            }
+        });
+
+        setInterval(() => {
+            const slides = document.querySelectorAll('.hero-slide');
+            if (slides.length > 0) {
+                slides[currentSlideIndex].classList.remove('active');
+                currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+                slides[currentSlideIndex].classList.add('active');
+                const nextSlide = slides[currentSlideIndex];
+                if (nextSlide.tagName === 'VIDEO') { nextSlide.play().catch(e => console.log(e)); }
+            }
+        }, 5000);
+    }
+
+    /* --- 2. Projects Database --- */
+    const projects = [
+{ 
+            id: 1, 
+            order: 1,
+            title: "project_ambition｜製作中", 
+            type: ["3d","work"], // 
+            videoFile:"3D\AI_BUILD\0830_03.JPG",
+            poster: "3D/AI_BUILD/0830_03.JPG",
+            youtubeLink: "#", 
+            description: `## 作品介紹
+目前正在製作的校內產學合作案，是一部關於AI環保議題的短片，在四人團體中主要負責美術與部分資產建置、部分動畫，部分打光。
+礙於還在製作期，僅放置少量個人負責的段落與資產。`, 
+            software: "Photoshop, MAYA, Substance Painter", 
+            images: ["3D/AI_BUILD/0830_01.PNG", "3D/AI_BUILD/0830_02.PNG", "3D/AI_BUILD/0830_03.PNG", "3D/AI_BUILD/0830_04.PNG", "3D/AI_BUILD/0830_06.PNG", "3D/AI_BUILD/0830_05.PNG"] 
+        },
+        { 
+            id: 13, 
+            order: 10,
+            title: "《絕區零》盧西婭EP｜DAMIDAMI-插圖", 
+            type: ["work"], 
+            videoFile: "work/GOAT EP/081.MP4", 
+            poster: "work/GOAT EP/29.PNG",
+            youtubeLink: "https://youtu.be/XcbcfNDCUF8?si=kh4DFkFFrMFF0CRz", 
+            description: `
+參與手遊「絕區零」角色EP製作，繪製背景與處裡拆件
+完整影片在本頁底部`, 
+            software: "Photoshop", 
+            images: ["work/GOAT EP/29.PNG", "work/GOAT EP/sc0310v11.PNG", "work/GOAT EP/025.PNG", "work/GOAT EP/Sc0330-V6.PNG", "work/GOAT EP/47.PNG", "work/GOAT EP/Sc0342V5-8.PNG", "work/GOAT EP/433.PNG", "work/GOAT EP/SC0390Vok.PNG"] 
+        },
+        { 
+            id: 11, 
+            order: 20,
+            title: "《絕區零》伊德海莉的深夜來電｜怪談故事1《午夜琴謎》-插圖", 
+            type: ["work"], 
+            videoFile: "work/optus EP1/25211.MP4", 
+            poster: "work/optus EP1/1-2_31.PNG",
+            youtubeLink: "https://youtu.be/tfnG1Hno1LU?si=dbKCdBtO7cUENUE7", 
+            description: `參與手遊「絕區零」角色故事製作，繪製背景與處裡拆件
+
+完整影片在本頁底部
+`, 
+            software: "Photoshop", 
+            images: ["work/optus EP1/03.JPG", "work/optus EP1/1-2_03.PNG", "work/optus EP1/1-2_13.PNG", "work/optus EP1/1-2_31.PNG"] 
+        },
+        { 
+            id: 14, 
+            order: 30,
+            title: "《絕區零》伊德海莉的深夜來電｜怪談故事2《深海之眼》》-插圖", 
+            type: ["work"], 
+            videoFile: "work/optus EP2/408.MP4", 
+            poster: "work/optus EP2/sea30.PNG",
+            youtubeLink: "https://youtu.be/FkvjWCE06xM?si=-bZl8CBfr6g8P-Zx", 
+            description: `參與手遊「絕區零」角色故事製作，繪製背景與處裡拆件
+
+完整影片在本頁底部
+`, 
+            software: "Photoshop", 
+            images: ["work/optus EP2/sea01.PNG", "work/optus EP2/sea06.PNG", "work/optus EP2/sea30.PNG"] 
+        },
+ { 
+            id: 1, 
+            order: 4,
+            title: "場景練習-古客家械鬥士", 
+            type: ["3d","scene"], 
+            videoFile: "3D/FIGHT2/NewLevelSequence21.MP4", 
+            poster: "3D/FIGHT2/02.PNG",
+            youtubeLink: "#", 
+            description: `## 概念發想
+由客家土樓聯想到同為圓形的羅馬競技場，因此設計了一座土樓競技場，再加上兩名分別代表各自勢力（閩、粵）的鬥士在場內決戰。
+## 製作方式
+模型皆由我繪製草圖設計後使用ai生成，再使用Zbrush繪製貼圖，unreal搭建建築與打光運鏡
+
+## 音效與配樂
+西螺七劍
+`, 
+            software: " Zbrush/Premiere/Unreal ", 
+            images: ["3D/FIGHT2/NewLevelSequence2.MP4","3D/FIGHT2/450.PNG", "3D/FIGHT2/752.PNG","3D/FIGHT2/1f38.JPG","3D/FIGHT2/540.PNG","3D/FIGHT2/7.PNG","3D/FIGHT2/232.PNG",
+"3D/FIGHT2/253.PNG",] 
+        },
+        { 
+            id: 1, 
+            order: 10,
+            title: "動態美術圖-knight", 
+            type: ["3d"], 
+            videoFile: "3D/knight/Duel_2.MP4", 
+            poster: "3D/knight/450.JPG",
+            youtubeLink: "#", 
+            description: `
+將自己繪製的插畫透過3D軟體製作成動態美術圖
+
+完整影片在本頁底部
+`, 
+            software: " Blender/Premiere ", 
+            images: ["3D/knight/043400.PNG", "3D/knight/final.MP4"] 
+        },
+{ 
+            id: 1, 
+            order: 3,
+            title: "片頭動畫-沒視新聞台", 
+            type: ["3d"], 
+            videoFile: "3D/TABLE/2311.MP4", 
+            poster: "3D/TABLE/25.PNG",
+            youtubeLink: "#", 
+            description: `
+## 企劃作業
+模仿早期電視台開頭動畫製作
+參與拍攝與3D製作
+`, 
+            software: "MAYA/Premiere", 
+            images: ["3D/TABLE/021.MP4","3D/TABLE/532.PNG","3D/TABLE/942.PNG","3D/TABLE/934.PNG"] 
+        }, 
+ 
+        { 
+            id: 18, 
+            order: 2,
+            title: "角色設計-神子2.0", 
+            type: ["3d"], 
+            videoFile: "3D/GOD SON/000.PNG", 
+            poster: "3D/GOD SON/666.PNG",
+            youtubeLink: "#", 
+            description: `
+對高中設計的模型角色進行重製（1.0請看CHARACTER-神子1.0）
+
+## 故事設定
+在中世紀從天而降的不明異形，渾身的皮膚在墜落途中與大氣層摩擦燃燒殆盡，肌肉與骨骼隨時暴露在空氣中，牠並沒有帶有惡意，但人類對於他痛苦嚎叫的錯誤詮釋，使成為他從天而降，上帝派來拯救人類的第二位使徒，瘋狂開始在異性的獸性與宗教賦予的神性中滋生，一個瘋狂的時代開始了....
+
+## 設計理念
+繪製第一版正視圖後使用ai生成多版不同造型做參考，整體發想以「神聖與畸變共存」為主軸，透過宗教造型與生物的融合設計讓怪物有既神聖又扭曲的感受。`, 
+            software: "ZBrush", 
+            images: ["3D/GOD SON/000.PNG", "3D/GOD SON/111.PNG", "3D/GOD SON/222.PNG", "3D/GOD SON/777.PNG"] 
+        },
+        { 
+            id: 2, 
+            order: 10,
+            title: "動態繪本-雪水消融的季節:The Last Duel", 
+            type: ["storyboard"], 
+            videoFile: "storyboard/The Last Duel/The Last Duel_2.mp4",
+            poster: "storyboard/The Last Duel/123.PNG", 
+            youtubeLink: "", 
+            description: ` ## 課堂小組作業
+對台灣紀錄片 ”雪水消融的季節 ”重新改編詮釋
+負責部分：分鏡設計與部分精稿繪製
+
+## 改編方向
+紀錄片原本講述一對情侶被困山中，透過倖存者的視角探討人們面對生命的逝去，以及如何面對剩下的悲傷與承諾。
+我們小組將故事主題聚焦於兩人在山洞中的最後幾天，完全替換兩人的個性，用決定讓誰活下去的決鬥編寫一段全新故事。
+## 分鏡理念
+用大量的物品符號表現兩人最後的心境；用火柴代表希望，餅乾與瓦斯代表存活的機會，象徵主角A（成都超）的玩具士兵擺出攻擊姿態，顯示他不顧一切活下去的決心，象徵主角B（仁baby）的玩具士兵從始至終高舉著手臂，為心中那份至死不渝的愛甘願永遠消失在世上
+
+完整影片如下`, 
+            software: "After Effects / Premiere", 
+            images: ["storyboard/The Last Duel/The Last Duel.MP4", "storyboard/The Last Duel/555.PNG", "storyboard/The Last Duel/666.PNG"] 
+        },
+        { 
+            id: 3, 
+            order: 1,
+            title: "角色設計-ASH molone", 
+            type: ["character"], 
+            imageFile: "CHARACTER/ASH WORKS/IMG_2217.JPG", 
+            youtubeLink: "#", 
+            description: `## 角色設計課作業1
+香煙+機械+黑手黨角色設計
+以香煙造形設計武器`, 
+            software: "procreate", 
+            images: ["CHARACTER/ASH WORKS/IMG_2217.JPG", "CHARACTER/ASH WORKS/222.PNG"] 
+        },
+        { 
+            id: 6, 
+            order: 9,
+            title: "模型-神子1.0", 
+            type: ["character"], 
+            imageFile: "CHARACTER/GOD SON 1.0/5202.PNG", 
+            youtubeLink: "#", 
+            description: `## 角色設計練習
+嘗試將機械與肌肉做融合做出「受到裝甲拘束並消弭獸性的野獸」的感覺並在機械與進怪獸中嘗試加入一些宗教有關的元素 手腳的骨釘、背上形似翅膀的推進器和十字架，想創作一個如耶穌般降臨人間替人承受傷痛（戰爭）的化身
+`, 
+            software: "procreate", 
+            images: ["CHARACTER/GOD SON 1.0/1307.PNG","CHARACTER/GOD SON 1.0/5202.PNG","CHARACTER/GOD SON 1.0/201317.PNG","CHARACTER/GOD SON 1.0/329.PNG",] 
+        },
+
+        { 
+            id: 4, 
+            order: 5,
+            title: "角色設計-ENzo doom", 
+            type: ["character"], 
+            imageFile: "CHARACTER/ASH WORKS/5.PNG", 
+            youtubeLink: "#", 
+            description: `## 角色設計課作業3：
+器大象+機械+黑手黨角色設計
+以象鼻造形發想設計武器外型與外輪廓`, 
+            software: "procreate", 
+            images: ["CHARACTER/ASH WORKS/5.PNG"] 
+        }, 
+        { 
+            id: 44, 
+            order: 2,
+            title: "角色設計-Ivory jack", 
+            type: ["character"], 
+            imageFile: "CHARACTER/ASH WORKS/2.PNG", 
+            youtubeLink: "#", 
+            description: `## 角色設計課作業2
+左輪手槍+機械+黑手黨角色設計
+以左輪手槍作為手臂揮拳的推進動力`, 
+            software: "procreate", 
+            images: ["CHARACTER/ASH WORKS/2.PNG", "CHARACTER/ASH WORKS/IMG_2216.PNG"]
+        },
+        { 
+            id: 444, 
+            order: 3,
+            title: "角色設計-Celestina Vale", 
+            type: ["character"], 
+            imageFile: "CHARACTER/ASH WORKS/3.PNG", 
+            youtubeLink: "#", 
+            description: `## 角色設計課作業4
+設計作為機械母體的反派，能源源不斷的產生彈殼怪，背部的裝置靈感來自於椎間盤的結構，擠出脫落的彈殼會變形成彈殼怪`, 
+            software: "procreate", 
+            images: ["CHARACTER/ASH WORKS/3.PNG", "CHARACTER/ASH WORKS/IMG_2549(1).PNG"]
+        },
+        { 
+            id: 5, 
+            order: 20,
+            title: "遊戲預告-Breaking toys-syuff MR.Potato ", 
+            type: ["storyboard"], 
+            videoFile: "storyboard/toy story/11.4Finalcut02.mp4", 
+            poster: "storyboard/toy story/6.PNG",
+            youtubeLink: "#", 
+            description: `## 課堂小組作業
+挑選知名ip重新創造故事，我們小組選擇改編「玩具總動員」ip並製作成遊戲，將胡迪丟進毒品與腐敗橫行的墨西哥，為了拯救主人成為一方大毒梟
+個人負責部分；分鏡設計、音效設計、概念圖繪製
+
+## 預告劇情大綱
+胡迪從小陪著安德烈成長，但受迫于於環境，安德烈成為一名毒販，但本性善良的安德烈顯然不適合這行，多次鋌而走險的他只剩下了最後一次機會；使用彈頭先生運送大量毒品越過邊境，但這個計畫依舊被警官察覺了，胡迪為了主人，只能賭上一切...
+
+完整影片如下
+`, 
+            software: "Photoshop", 
+            images: ["storyboard/toy story/11.4Final.mp4", "storyboard/toy story/555.PNG", "storyboard/toy story/666.mp4"] 
+        },
+        { 
+            id: 7, 
+            order: 30,
+            title: "動態分鏡-bulb", 
+            type: ["storyboard"], 
+            videoFile: "storyboard/bulb/1_2.mp4", 
+            poster: "storyboard/bulb/18 005425.PNG",
+            youtubeLink: "#", 
+            description: `## 分鏡設計練習
+「我缺少了哪部分，或是改變到那個程度，我就不是我了呢？」
+
+## 核心主旨
+物品其實更容易出現這個情況，當一個物品失去了原本的功能，它存在的意義又是什麼呢，漫無目的活著是很痛苦的，片中主角選擇用激進的方式完成他的與生俱來的使命；照亮所有人，彰顯了自己的存在，但也就此消散，以近乎欺瞞自己的方式為自己重新找到意義。
+
+完整影片如下`, 
+            software: "Photoshop", 
+            images: ["storyboard/bulb/BUlB.mp4", "storyboard/bulb/IMG_2686.PNG", "storyboard/bulb/IMG_2688.PNG"]
+         },
+         { 
+            id: 7, 
+            order: 40,
+            title: "手機廣告-poco C65-Indesteructible", 
+            type: ["storyboard"], 
+            videoFile: "storyboard/poco C65/poco C65-cut.mp4", 
+            poster: "storyboard/poco C65/20255.PNG",
+            youtubeLink: "#", 
+            description: `## 手機創意廣告分鏡練習
+設定主題為「Poco c65-無堅不摧」
+
+## 故事設定
+設定了一隻邪惡機器人入侵了城市，機器人摧毀了一切，但手機透過堅固的外殼反殺了機器人，凸顯手機的堅不可摧。
+
+完整影片如下
+`, 
+            software: "Photoshop/premiere pro", 
+            images: ["storyboard/poco C65/poco C65-ok.MP4", "storyboard/poco C65/1.PNG", "storyboard/poco C65/2.PNG", "storyboard/poco C65/3.PNG", "storyboard/poco C65/4.PNG", "storyboard/poco C65/5.PNG", "storyboard/poco C65/6.PNG"]
+         },
+         { 
+            id: 177, 
+            order: 10,
+            title: "概念設計-Breaking toys-syuff MR.Potato", 
+            type: ["illustration","scene"], 
+            videoFile: "illustration/Breaking toy!stuff/The Last Duel_3.mp4", 
+            poster: "illustration/Breaking toy!stuff/LOGO.PNG",
+            youtubeLink: "#", 
+            description: `## 課堂小組專案
+挑選知名ip重新創造故事，我們小組選擇改編「玩具總動員」ip並製作成遊戲，將胡迪丟進毒品與腐敗橫行的墨西哥，為了拯救主人成為一方大毒梟
+
+## 負責部分
+遊戲地圖設計、概念圖繪製
+使用組員搭建的地圖blocking繪製色彩概念圖，確定遊戲色調
+以下為遊戲展示影片與概念圖色彩參考
+`, 
+            software: "Photoshop", 
+            images: ["illustration/Breaking toy!stuff/The Last Duel_1.MP4", "illustration/Breaking toy!stuff/01.JPG", "illustration/Breaking toy!stuff/03.PNG", "illustration/Breaking toy!stuff/333.JPG", "illustration/Breaking toy!stuff/factory_refMap.JPG"] 
+        },
+        { 
+            id: 178,
+            order: 111,
+            title: "原創插畫-浩☆瀚☆無☆垠☆", 
+            type: ["illustration"], 
+            videoFile: "illustration/me/5948.PNG", 
+            poster: "illustration/me/5948.PNG",
+            youtubeLink: "#", 
+            description: `「交雜生長的高樓聳立於不見蹤影的地面，而你卻只能蝸居在這罐頭中。」
+
+此圖為香港旅遊的觀後感。`, 
+            software: "Photoshop", 
+            images: ["illustration/me/Pt2.PNG", " illustration/me/IMG_3862.JPEG", " illustration/me/IMG_3863.JPEG", " illustration/me/IMG_3864.JPEG"] 
+        },
+        { 
+            id: 18, 
+            order: 6,
+            title: "角色設計-紙上談兵", 
+            type: ["character"], 
+            videoFile: "CHARACTER/FIGHT/431123.MP4", 
+            poster: "CHARACTER/FIGHT/185011.PNG",
+            youtubeLink: "https://youtu.be/bqWo5JO5nlQ?si=zNkxkHbOH6qYhYG1", 
+            description: `## 遊戲企劃設計作業
+立法院&塔防
+立法院的混亂事件被放大成為一場紙上戰爭。角色以剪貼報紙風呈現，象徵資訊混亂、政治碰撞與輿論交鋒。
+
+## 設計理念
+"紙上談兵"遊戲名稱還有雙關之意，角色與場景皆由報紙剪貼而成，象徵民眾所能見到立院內發生的一切也都是透過不同媒體主觀理解後產生的，也有官員作秀之意
+
+## 負責工作
+角色設計、動畫
+傅崐萁、柯建銘：坦克
+沈伯洋、許巧芯：射手
+王定宇、馬文君：戰士
+韓國瑜：主席台主堡
+
+玩法展示在本頁底部`, 
+            software: "Photoshop", 
+            images: ["CHARACTER/FIGHT/12.png", "CHARACTER/FIGHT/622_loop.MP4",
+                     "CHARACTER/FIGHT/534_loop.MP4",
+                     "CHARACTER/FIGHT/554_loop.MP4",
+                     "CHARACTER/FIGHT/829_loop.MP4",
+                     "CHARACTER/FIGHT/22_loop.MP4",
+                     "CHARACTER/FIGHT/11_loop.MP4",] 
+        },
+        { 
+            id: 17, 
+            order: 10,
+            title: "場景設計-Biomimetic Murder", 
+            type: ["scene","illustration"], 
+            videoFile: "scene/FUTURE/The Last Duel_21.MP4", 
+            poster: "scene/FUTURE/33.PNG",
+            youtubeLink: "#", 
+            description: `## 設計理念場景練習
+由雪山實驗室開始的一連串針對仿生人的謀殺，一切線索似乎都指向某種狂熱的信仰`,
+            software: "Photoshop", 
+            images: ["scene/FUTURE/2911.PNG", "scene/FUTURE/33.PNG", "scene/FUTURE/007.PNG", "scene/FUTURE/17.PNG"] 
+        }
+    ];
+
+    /* --- 3. Core Logic --- */
+    const container = document.getElementById('galleryContainer');
+    const modal = document.getElementById('projectModal');
+    const modalBody = document.getElementById('modalBody');
+
+    function getPriorityIndex(types, orderList) {
+        const typeArr = Array.isArray(types) ? types : [types];
+        let minIndex = 999;
+        typeArr.forEach(t => {
+            const idx = orderList.indexOf(t);
+            if (idx !== -1 && idx < minIndex) minIndex = idx;
+        });
+        return minIndex;
+    }
+
+    function renderProjects(filterType) {
+        container.innerHTML = ''; 
+        
+        const filteredData = filterType === 'all' 
+            ? projects 
+            : projects.filter(p => {
+                if (Array.isArray(p.type)) { return p.type.includes(filterType); }
+                return p.type === filterType;
+            });
+        
+        filteredData.sort((a, b) => {
+            const indexA = getPriorityIndex(a.type, categorySortOrder);
+            const indexB = getPriorityIndex(b.type, categorySortOrder);
+            if (indexA !== indexB) {
+                return indexA - indexB;
+            }
+            return (a.order || 999) - (b.order || 999);
+        });
+        
+        filteredData.forEach((project, index) => {
+            const card = document.createElement('div'); card.className = 'project-card';
+            card.onclick = () => openModal(project);
+
+            // 判斷圖片優先順序
+            let preloadAttrs = '';
+            if (index < 4) { 
+                // 【第二優先級】首屏可見範圍 (前 4 張專案)：優先下載
+                preloadAttrs = 'fetchpriority="high" loading="eager"';
+            } else { 
+                // 【第三優先級】非首屏需滾動內容：延遲下載
+                preloadAttrs = 'fetchpriority="low" loading="lazy"';
+            }
+
+            let mediaContent = '';
+            if (project.videoFile) {
+                const posterAttr = project.poster ? `poster="${project.poster}"` : '';
+                
+                if (project.videoFile.toLowerCase().includes('loop')) {
+                    mediaContent = `<video src="${project.videoFile}" ${posterAttr} autoplay muted loop playsinline preload="metadata"></video>`;
+                } 
+                else {
+                    mediaContent = `<video src="${project.videoFile}" ${posterAttr} muted loop playsinline preload="none"></video>`;
+                }
+            } else if (project.imageFile) {
+                // 套用毛玻璃 Loading 結構與優先順序
+                mediaContent = `
+                    <div class="img-loading-container" style="height: 100%;">
+                        <div class="blur-placeholder frosted-glass"></div>
+                        <img src="${project.imageFile}" alt="${project.title}" ${preloadAttrs} onload="this.closest('.img-loading-container').classList.add('loaded')">
+                    </div>
+                `;
+            }
+
+            let typeLabel = '';
+            if (Array.isArray(project.type)) { typeLabel = project.type.join(' / ').toUpperCase(); } 
+            else { typeLabel = project.type.toUpperCase(); }
+
+            card.innerHTML = `
+                <div class="media-layer">${mediaContent}</div>
+                <div class="info-overlay">
+                    <span class="card-type">${typeLabel}</span>
+                    <h3 class="card-title">${project.title}</h3>
+                </div>
+            `;
+
+            const video = card.querySelector('video');
+            if (video && !video.hasAttribute('autoplay')) { 
+                card.addEventListener('mouseenter', () => { 
+                    video.muted = false; 
+                    if (video.preload === 'none') { video.preload = 'auto'; }
+                    var p = video.play();
+                    if(p !== undefined) { p.catch(e => { video.muted = true; video.play(); }); }
+                });
+                card.addEventListener('mouseleave', () => { 
+                    video.pause(); video.load(); 
+                });
+            }
+
+            container.appendChild(card);
+        });
+    }
+
+    function openModal(project) {
+        const contentHtml = project.images.map((file, index) => {
+            if (file.toLowerCase().endsWith('.mp4')) {
+                if (file.toLowerCase().includes('loop')) {
+                    return `<video src="${file}" autoplay muted loop playsinline></video>`;
+                } else {
+                    return `<video src="${file}" controls playsinline loop preload="metadata"></video>`;
+                }
+            } else {
+                // 彈窗內的第一張圖優先，其餘延遲載入
+                const preloadAttrs = index === 0 ? 'fetchpriority="high" loading="eager"' : 'fetchpriority="low" loading="lazy"';
+                return `
+                    <div class="img-loading-container modal-img-wrapper">
+                        <div class="blur-placeholder frosted-glass"></div>
+                        <img src="${file}" ${preloadAttrs} onload="this.closest('.img-loading-container').classList.add('loaded')">
+                    </div>
+                `;
+            }
+        }).join('');
+
+        let buttonHtml = '';
+        if (project.youtubeLink && project.youtubeLink !== "" && project.youtubeLink !== "#") {
+            buttonHtml = `<a href="${project.youtubeLink}" target="_blank" class="yt-btn">WATCH FULL VIDEO</a>`;
+        }
+
+        let typeLabel = '';
+        if (Array.isArray(project.type)) { typeLabel = project.type.join(' / ').toUpperCase(); } 
+        else { typeLabel = project.type.toUpperCase(); }
+
+        // --- 🌟 新增：解析內文的 "## 小標題" 語法 ---
+        let processedDescription = project.description || '';
+        processedDescription = processedDescription.replace(/^##\s+(.+)$/gm, '<div class="modal-content-subtitle">$1</div>');
+
+        modalBody.innerHTML = `<div class="modal-header-large">${project.title}</div><div class="modal-meta"><span>CATEGORY: ${typeLabel}</span><span>TOOLS: ${project.software || 'N/A'}</span></div><div class="modal-content-body">${processedDescription}</div>${buttonHtml}<div class="modal-gallery">${contentHtml}</div>`; 
+        
+        modal.style.display = 'block'; setTimeout(() => { modal.style.opacity = '1'; }, 10); document.body.style.overflow = 'hidden';
+    }
+
+    function openAboutModal() {
+        modalBody.innerHTML = `
+            <div class="modal-header-large">ABOUT ME</div>
+            <div class="about-modal-layout">
+                <div class="about-modal-img">
+                    <div class="img-loading-container" style="border-radius: 4px;">
+                        <div class="blur-placeholder frosted-glass" style="border-radius: 4px;"></div>
+                        <img src="FACE/IMG_2732.JPEG" style="border-radius: 4px; width: 100%;" fetchpriority="high" loading="eager" onload="this.closest('.img-loading-container').classList.add('loaded')">
+                    </div>
+                </div>
+                <div class="about-modal-text">
+                    <h3 style="margin-top:0; color:#fff;">HI, I'M YEEE.</h3>
+                    <p class="modal-content-body" style="margin-top:20px;">
+                        目前就讀雲科數媒 大二
+                        非常想參加這個課程
+                        拜託選我
+                        
+                    </p>
+                    <p style="color:#666; margin-top:30px;">SOFTWARE SKILLS:<br>MAYA,ZBrush,Blender,Unreal Photoshop,Adobe Premiere Pro, After Effects</p>
+                    <button onclick="document.getElementById('contact-icons-row').style.display = 'flex'; this.style.display = 'none';" class="yt-btn" style="margin-top:30px; background: transparent; width: auto; cursor: pointer;">CONTACT ME</button>
+                    <div id="contact-icons-row" style="display: none; gap: 20px; margin-top: 30px; justify-content: flex-start;">
+                        <a href="https://www.facebook.com/ye.yi.yi.233045" target="_blank" class="social-link" style="width:50px; height:50px;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.15 5.96C15.21 5.96 16.12 6.04 16.12 6.04V8.51H15.01C13.77 8.51 13.38 9.28 13.38 10.07V12.06H16.16L15.72 14.96H13.38V21.96C18.16 21.21 21.82 17.06 21.82 12.06C21.82 6.53 17.32 2.04 12 2.04Z"/></svg></a>
+                        <a href="https://www.instagram.com/yeee.0413?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="social-link" style="width:50px; height:50px;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M19,5A1,1 0 0,1 20,6A1,1 0 0,1 19,7A1,1 0 0,1 18,6A1,1 0 0,1 19,5Z" /></svg></a>
+                        <a href="https://youtube.com/@yeee-h3d?si=HJiVyQ6-vUbY-lUe" target="_blank" class="social-link" style="width:50px; height:50px;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></a>
+                    </div>
+                </div>
+            </div>
+        `;
+        modal.style.display = 'block'; setTimeout(() => { modal.style.opacity = '1'; }, 10); document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        // ★ V7.7: Force Pause
+        const videos = modalBody.querySelectorAll('video');
+        videos.forEach(v => v.pause());
+
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            modalBody.innerHTML = '';
+        }, 300);
+    }
+
+    function filterProjects(type) { 
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active')); 
+        if(event.target.classList.contains('filter-btn') && !event.target.classList.contains('about-btn')) { event.target.classList.add('active'); }
+        renderProjects(type); 
+    }
+    renderProjects('all');
+</script>
+
+</body>
+</html>
