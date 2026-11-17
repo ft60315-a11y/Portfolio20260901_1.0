@@ -142,18 +142,28 @@
         .contact-info:hover { color: #fff; }
 
         /* Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: none; opacity: 0; transition: opacity 0.3s; overflow-y: auto; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 1000; display: none; opacity: 0; transition: opacity 0.3s; overflow-y: auto; }
         .modal-container { width: 100%; max-width: 900px; margin: 80px auto; padding: 0 20px; color: #fff; position: relative; }
+        .modal-container.project-modal-mode { max-width: 100%; margin: 0; padding: 0; min-height: 100vh; }
+
+        /* ArtStation 橫式雙欄版面 */
+        .artstation-layout { display: flex; align-items: flex-start; min-height: 100vh; width: 100%; }
+        .modal-stage { flex: 1; min-width: 0; min-height: 100vh; background: #070707; padding: 40px 80px 80px 80px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+        .modal-stage .modal-gallery { width: 100%; max-width: 1150px; }
+        .modal-sidebar { width: 400px; flex-shrink: 0; background: #141414; border-left: 1px solid #262626; padding: 65px 32px 40px 32px; position: sticky; top: 0; height: 100vh; overflow-y: auto; box-sizing: border-box; }
+        .modal-sidebar::-webkit-scrollbar { width: 6px; }
+        .modal-sidebar::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
         /* 這裡一定要有 white-space: pre-line; */
-        .modal-content-body { font-size: 1.1rem; line-height: 1.8; color: #ccc; margin-bottom: 50px; max-width: 800px; white-space: pre-line; }
+        .modal-content-body { font-size: 1.05rem; line-height: 1.8; color: #ccc; margin-bottom: 35px; max-width: 800px; white-space: pre-line; }
         
         /* --- 🌟 新增：內文小標題樣式 --- */
         .modal-content-subtitle { 
-            font-size: 1.35rem; 
+            font-size: 1.25rem; 
             color: #fff; 
             font-weight: 500; 
-            margin-top: 35px; 
-            margin-bottom: 5px; 
+            margin-top: 28px; 
+            margin-bottom: 6px; 
             padding-left: 12px; 
             border-left: 3px solid var(--accent); 
             letter-spacing: 1px; 
@@ -161,20 +171,58 @@
             line-height: 1.4;
         }
 
-        .close-btn { position: fixed; top: 30px; right: 30px; font-size: 40px; background: none; border: none; color: #fff; cursor: pointer; z-index: 1001; }
-        .modal-header-large { font-size: 3rem; font-family: 'Oswald', sans-serif; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 20px; }
-        .modal-meta { display: flex; gap: 30px; color: var(--text-grey); font-size: 0.9rem; margin-bottom: 40px; }
+        .close-btn { position: fixed; top: 18px; right: 24px; font-size: 36px; line-height: 1; background: none; border: none; color: #aaa; cursor: pointer; z-index: 1003; transition: color 0.2s, transform 0.2s; }
+        .close-btn:hover { color: #fff; transform: scale(1.1); }
+
+        /* 左右切換作品按鈕 */
+        .modal-nav-btn {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 64px;
+            background: rgba(20, 20, 20, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+            color: rgba(255, 255, 255, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1002;
+            transition: background 0.25s, color 0.25s, border-color 0.25s, transform 0.25s;
+            padding: 0;
+        }
+        .modal-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        .modal-nav-btn svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+        .modal-nav-btn.prev-btn { left: 16px; }
+        .modal-nav-btn.next-btn { right: 416px; }
+
+        .modal-header-large { font-size: 2.2rem; line-height: 1.2; font-family: 'Oswald', sans-serif; margin-bottom: 16px; border-bottom: 1px solid #2e2e2e; padding-bottom: 16px; word-break: break-word; }
+        .modal-meta { display: flex; flex-direction: column; gap: 8px; color: var(--text-grey); font-size: 0.88rem; margin-bottom: 28px; letter-spacing: 0.5px; }
         
-        .modal-gallery img, .modal-gallery video { width: 100%; margin-bottom: 20px; display: block; }
+        .modal-gallery img, .modal-gallery video { width: 100%; margin-bottom: 24px; display: block; border-radius: 4px; }
         
-        .yt-btn { display: inline-block; border: 1px solid #fff; color: #fff; padding: 15px 40px; text-decoration: none; font-family: 'Oswald', sans-serif; letter-spacing: 2px; transition: 0.3s; margin-top: 30px; margin-bottom: 50px; text-transform: uppercase; width: 100%; text-align: center; cursor: pointer; }
+        .yt-btn { display: inline-block; border: 1px solid #fff; color: #fff; padding: 14px 30px; text-decoration: none; font-family: 'Oswald', sans-serif; letter-spacing: 2px; transition: 0.3s; margin-top: 10px; margin-bottom: 20px; text-transform: uppercase; width: 100%; text-align: center; cursor: pointer; }
         .yt-btn:hover { background: #fff; color: #000; }
         .about-modal-layout { display: flex; gap: 40px; flex-wrap: wrap; }
         .about-modal-img { flex: 1; min-width: 300px; }
         .about-modal-img img { width: 100%; filter: grayscale(100%); }
         .about-modal-text { flex: 2; }
 
-        /* --- 📱 手機版專屬優化 --- */
+        /* --- 📱 響應式與手機版專屬優化 --- */
+        @media (max-width: 1024px) {
+            .artstation-layout { flex-direction: column; }
+            .modal-stage { width: 100%; min-height: auto; padding: 60px 20px 20px 20px; order: 1; }
+            .modal-sidebar { width: 100%; height: auto; position: relative; border-left: none; border-top: 1px solid #262626; padding: 30px 20px 50px 20px; order: 2; }
+            .modal-nav-btn.prev-btn { left: 10px; width: 38px; height: 52px; }
+            .modal-nav-btn.next-btn { right: 10px; width: 38px; height: 52px; }
+        }
+
         @media (max-width: 768px) {
             nav { padding: 15px 20px; }
             .logo { font-size: 20px; }
@@ -197,7 +245,8 @@
             .footer-right { align-items: flex-start; text-align: left; }
             footer { padding: 50px 20px; }
             .modal-container { margin: 60px auto; }
-            .modal-header-large { font-size: 2rem; }
+            .modal-container.project-modal-mode { margin: 0; }
+            .modal-header-large { font-size: 1.8rem; }
             .about-modal-layout { flex-direction: column; gap: 20px; }
             .about-modal-img { min-width: 100%; }
         }
@@ -312,9 +361,10 @@
         </div>
         <div class="footer-right">
             <div class="social-icons">
-                <a href="https://www.facebook.com/ye.yi.yi.233045" target="_blank" class="social-link"><svg viewBox="0 0 24 24"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.15 5.96C15.21 5.96 16.12 6.04 16.12 6.04V8.51H15.01C13.77 8.51 13.38 9.28 13.38 10.07V12.06H16.16L15.72 14.96H13.38V21.96C18.16 21.21 21.82 17.06 21.82 12.06C21.82 6.53 17.32 2.04 12 2.04Z"/></svg></a>
-                <a href="https://www.instagram.com/yeee.0413?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="social-link"><svg viewBox="0 0 24 24"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M19,5A1,1 0 0,1 20,6A1,1 0 0,1 19,7A1,1 0 0,1 18,6A1,1 0 0,1 19,5Z" /></svg></a>
-                <a href="https://youtube.com/@yeee-h3d?si=HJiVyQ6-vUbY-lUe" target="_blank" class="social-link"><svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></a>
+                <a href="https://www.facebook.com/ye.yi.yi.233045" target="_blank" class="social-link" title="Facebook"><svg viewBox="0 0 24 24"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.15 5.96C15.21 5.96 16.12 6.04 16.12 6.04V8.51H15.01C13.77 8.51 13.38 9.28 13.38 10.07V12.06H16.16L15.72 14.96H13.38V21.96C18.16 21.21 21.82 17.06 21.82 12.06C21.82 6.53 17.32 2.04 12 2.04Z"/></svg></a>
+                <a href="https://www.instagram.com/yeee.0413?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="social-link" title="Instagram"><svg viewBox="0 0 24 24"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M19,5A1,1 0 0,1 20,6A1,1 0 0,1 19,7A1,1 0 0,1 18,6A1,1 0 0,1 19,5Z" /></svg></a>
+                <a href="https://youtube.com/@yeee-h3d?si=HJiVyQ6-vUbY-lUe" target="_blank" class="social-link" title="YouTube"><svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></a>
+                <a href="https://www.artstation.com/yeee-20260203" target="_blank" class="social-link" title="ArtStation"><svg viewBox="0 0 24 24"><path d="M0 17.723l2.027 3.505h.001a2.424 2.424 0 0 0 2.164 1.333h13.457l-2.792-4.838H0zm24 .025c0-.484-.143-.935-.388-1.314L15.728 2.728a2.424 2.424 0 0 0-2.142-1.289H9.419L21.598 22.54l1.92-3.325c.378-.637.482-.919.482-1.467zm-11.129-3.462L7.428 4.858l-5.444 9.428h10.887z"/></svg></a>
             </div>
             <div class="contact-label">Contact.</div>
             <a href="mailto:ft60315@gmail.com" class="contact-info">ft60315@gmail.com</a>
@@ -324,8 +374,14 @@
 </footer>
 
 <div class="modal-overlay" id="projectModal">
-    <button class="close-btn" onclick="closeModal()">×</button>
-    <div class="modal-container"><div id="modalBody"></div></div>
+    <button class="close-btn" onclick="closeModal()" title="關閉 (Esc)">×</button>
+    <button class="modal-nav-btn prev-btn" id="modalPrevBtn" onclick="navigateProject(-1)" title="上一個作品 (←)">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <button class="modal-nav-btn next-btn" id="modalNextBtn" onclick="navigateProject(1)" title="下一個作品 (→)">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+    <div class="modal-container" id="modalContainer"><div id="modalBody"></div></div>
 </div>
 
 <script>
@@ -404,10 +460,12 @@
     }
 
     /* --- 2. Projects Database --- */
+    /* 💡 顯示開關說明：將任一作品的 visible: true 改為 visible: false，即可在頁面上隱藏該作品（不需刪除資料） */
     const projects = [
 { 
             id: 1, 
             order: 1,
+            visible: true,
             title: "project_ambition｜製作中", 
             type: ["3d","work"], // 
             imageFile:"3D/AI_BUILD/0830_03.jpg",
@@ -421,6 +479,7 @@
         { 
             id: 13, 
             order: 10,
+            visible: true,
             title: "《絕區零》盧西婭EP｜DAMIDAMI-插圖", 
             type: ["work"], 
             videoFile: "work/GOAT_EP/081.mp4", 
@@ -435,6 +494,7 @@
         { 
             id: 11, 
             order: 20,
+            visible: true,
             title: "《絕區零》伊德海莉的深夜來電｜怪談故事1《午夜琴謎》-插圖", 
             type: ["work"], 
             videoFile: "work/optus_EP1/25211.mp4", 
@@ -450,6 +510,7 @@
         { 
             id: 14, 
             order: 30,
+            visible: true,
             title: "《絕區零》伊德海莉的深夜來電｜怪談故事2《深海之眼》》-插圖", 
             type: ["work"], 
             videoFile: "work/optus_EP2/408.mp4", 
@@ -465,6 +526,7 @@
  { 
             id: 1, 
             order: 4,
+            visible: true,
             title: "場景練習-古客家械鬥士", 
             type: ["3d","scene"], 
             videoFile: "3D/FIGHT2/NewLevelSequence21.mp4", 
@@ -485,6 +547,7 @@
         { 
             id: 1, 
             order: 10,
+            visible: true,
             title: "動態美術圖-knight", 
             type: ["3d"], 
             videoFile: "3D/knight/Duel_2.mp4", 
@@ -501,6 +564,7 @@
 { 
             id: 1, 
             order: 3,
+            visible: true,
             title: "片頭動畫-沒視新聞台", 
             type: ["3d"], 
             videoFile: "3D/TABLE/2311.mp4", 
@@ -518,6 +582,7 @@
         { 
             id: 18, 
             order: 2,
+            visible: true,
             title: "角色設計-神子2.0", 
             type: ["3d"], 
             imageFile: "3D/GOD_SON/000.png", 
@@ -536,6 +601,7 @@
         { 
             id: 2, 
             order: 10,
+            visible: true,
             title: "動態繪本-雪水消融的季節:The Last Duel", 
             type: ["storyboard"], 
             videoFile: "storyboard/The_Last_Duel/The Last Duel_2.mp4",
@@ -558,6 +624,7 @@
         { 
             id: 3, 
             order: 1,
+            visible: true,
             title: "角色設計-ASH molone", 
             type: ["character"], 
             imageFile: "CHARACTER/ASH_WORKS/IMG_2217.jpg", 
@@ -571,6 +638,7 @@
         { 
             id: 6, 
             order: 9,
+            visible: true,
             title: "模型-神子1.0", 
             type: ["character"], 
             imageFile: "CHARACTER/GOD_SON_1.0/5202.png", 
@@ -585,6 +653,7 @@
         { 
             id: 4, 
             order: 5,
+            visible: true,
             title: "角色設計-ENzo doom", 
             type: ["character"], 
             imageFile: "CHARACTER/ASH_WORKS/5.png", 
@@ -598,6 +667,7 @@
         { 
             id: 44, 
             order: 2,
+            visible: true,
             title: "角色設計-Ivory jack", 
             type: ["character"], 
             imageFile: "CHARACTER/ASH_WORKS/2.png", 
@@ -611,6 +681,7 @@
         { 
             id: 444, 
             order: 3,
+            visible: true,
             title: "角色設計-Celestina Vale", 
             type: ["character"], 
             imageFile: "CHARACTER/ASH_WORKS/3.png", 
@@ -623,6 +694,7 @@
         { 
             id: 5, 
             order: 20,
+            visible: true,
             title: "遊戲預告-Breaking toys-syuff MR.Potato ", 
             type: ["storyboard"], 
             videoFile: "storyboard/toy_story/11.4Finalcut02.mp4", 
@@ -643,6 +715,7 @@
         { 
             id: 7, 
             order: 30,
+            visible: true,
             title: "動態分鏡-bulb", 
             type: ["storyboard"], 
             videoFile: "storyboard/bulb/1_2.mp4", 
@@ -661,6 +734,7 @@
          { 
             id: 7, 
             order: 40,
+            visible: true,
             title: "手機廣告-poco C65-Indesteructible", 
             type: ["storyboard"], 
             videoFile: "storyboard/poco_C65/poco C65-cut.mp4", 
@@ -680,6 +754,7 @@
          { 
             id: 177, 
             order: 10,
+            visible: true,
             title: "概念設計-Breaking toys-syuff MR.Potato", 
             type: ["illustration","scene"], 
             videoFile: "illustration/Breaking_toy!stuff/The Last Duel_3.mp4", 
@@ -699,6 +774,7 @@
         { 
             id: 178,
             order: 111,
+            visible: true,
             title: "原創插畫-浩☆瀚☆無☆垠☆", 
             type: ["illustration"], 
             imageFile: "illustration/me/5948.png", 
@@ -712,6 +788,7 @@
         { 
             id: 18, 
             order: 6,
+            visible: true,
             title: "角色設計-紙上談兵", 
             type: ["character"], 
             videoFile: "CHARACTER/FIGHT/431123.mp4", 
@@ -743,6 +820,7 @@
         { 
             id: 17, 
             order: 10,
+            visible: true,
             title: "場景設計-Biomimetic Murder", 
             type: ["scene","illustration"], 
             videoFile: "scene/FUTURE/The Last Duel_21.mp4", 
@@ -758,7 +836,13 @@
     /* --- 3. Core Logic --- */
     const container = document.getElementById('galleryContainer');
     const modal = document.getElementById('projectModal');
+    const modalContainer = document.getElementById('modalContainer');
     const modalBody = document.getElementById('modalBody');
+    const modalPrevBtn = document.getElementById('modalPrevBtn');
+    const modalNextBtn = document.getElementById('modalNextBtn');
+
+    let currentFilteredProjects = [];
+    let currentProjectIndex = -1;
 
     function getPriorityIndex(types, orderList) {
         const typeArr = Array.isArray(types) ? types : [types];
@@ -773,9 +857,12 @@
     function renderProjects(filterType) {
         container.innerHTML = ''; 
         
+        // 僅顯示 visible !== false 的作品
+        const visibleProjects = projects.filter(p => p.visible !== false);
+
         const filteredData = filterType === 'all' 
-            ? projects 
-            : projects.filter(p => {
+            ? visibleProjects 
+            : visibleProjects.filter(p => {
                 if (Array.isArray(p.type)) { return p.type.includes(filterType); }
                 return p.type === filterType;
             });
@@ -788,10 +875,12 @@
             }
             return (a.order || 999) - (b.order || 999);
         });
+
+        currentFilteredProjects = filteredData;
         
         filteredData.forEach((project, index) => {
             const card = document.createElement('div'); card.className = 'project-card';
-            card.onclick = () => openModal(project);
+            card.onclick = () => openModal(project, index);
 
             // 判斷圖片優先順序
             let preloadAttrs = '';
@@ -852,8 +941,27 @@
         });
     }
 
-    function openModal(project) {
-        const contentHtml = project.images.map((file, index) => {
+    function openModal(project, index) {
+        // 停止先前彈窗內播放中的影片
+        const oldVideos = modalBody.querySelectorAll('video');
+        oldVideos.forEach(v => v.pause());
+
+        if (typeof index === 'number') {
+            currentProjectIndex = index;
+        } else {
+            currentProjectIndex = currentFilteredProjects.indexOf(project);
+        }
+
+        modalContainer.classList.add('project-modal-mode');
+        if (currentFilteredProjects.length > 1) {
+            modalPrevBtn.style.display = 'flex';
+            modalNextBtn.style.display = 'flex';
+        } else {
+            modalPrevBtn.style.display = 'none';
+            modalNextBtn.style.display = 'none';
+        }
+
+        const contentHtml = project.images.map((file, idx) => {
             if (file.toLowerCase().endsWith('.mp4')) {
                 if (file.toLowerCase().includes('loop')) {
                     return `<video src="${file}" autoplay muted loop playsinline></video>`;
@@ -862,7 +970,7 @@
                 }
             } else {
                 // 彈窗內的第一張圖優先，其餘延遲載入
-                const preloadAttrs = index === 0 ? 'fetchpriority="high" loading="eager"' : 'fetchpriority="low" loading="lazy"';
+                const preloadAttrs = idx === 0 ? 'fetchpriority="high" loading="eager"' : 'fetchpriority="low" loading="lazy"';
                 return `
                     <div class="img-loading-container modal-img-wrapper">
                         <div class="blur-placeholder frosted-glass"></div>
@@ -885,12 +993,54 @@
         let processedDescription = project.description || '';
         processedDescription = processedDescription.replace(/^##\s+(.+)$/gm, '<div class="modal-content-subtitle">$1</div>');
 
-        modalBody.innerHTML = `<div class="modal-header-large">${project.title}</div><div class="modal-meta"><span>CATEGORY: ${typeLabel}</span><span>TOOLS: ${project.software || 'N/A'}</span></div><div class="modal-content-body">${processedDescription}</div>${buttonHtml}<div class="modal-gallery">${contentHtml}</div>`; 
+        modalBody.innerHTML = `
+            <div class="artstation-layout">
+                <div class="modal-stage">
+                    <div class="modal-gallery">${contentHtml}</div>
+                </div>
+                <aside class="modal-sidebar">
+                    <div class="modal-header-large">${project.title}</div>
+                    <div class="modal-meta">
+                        <span>CATEGORY: ${typeLabel}</span>
+                        <span>TOOLS: ${project.software || 'N/A'}</span>
+                    </div>
+                    <div class="modal-content-body">${processedDescription}</div>
+                    ${buttonHtml}
+                </aside>
+            </div>
+        `; 
         
-        modal.style.display = 'block'; setTimeout(() => { modal.style.opacity = '1'; }, 10); document.body.style.overflow = 'hidden';
+        modal.scrollTop = 0;
+        modal.style.display = 'block';
+        setTimeout(() => { modal.style.opacity = '1'; }, 10);
+        document.body.style.overflow = 'hidden';
     }
 
+    function navigateProject(direction) {
+        if (currentProjectIndex === -1 || currentFilteredProjects.length <= 1) return;
+        const nextIndex = (currentProjectIndex + direction + currentFilteredProjects.length) % currentFilteredProjects.length;
+        openModal(currentFilteredProjects[nextIndex], nextIndex);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (modal.style.display !== 'block') return;
+        if (e.key === 'Escape') {
+            closeModal();
+        } else if (e.key === 'ArrowLeft' && currentProjectIndex !== -1) {
+            e.preventDefault();
+            navigateProject(-1);
+        } else if (e.key === 'ArrowRight' && currentProjectIndex !== -1) {
+            e.preventDefault();
+            navigateProject(1);
+        }
+    });
+
     function openAboutModal() {
+        currentProjectIndex = -1;
+        modalContainer.classList.remove('project-modal-mode');
+        modalPrevBtn.style.display = 'none';
+        modalNextBtn.style.display = 'none';
+
         modalBody.innerHTML = `
             <div class="modal-header-large">ABOUT ME</div>
             <div class="about-modal-layout">
@@ -911,14 +1061,18 @@
                     <p style="color:#666; margin-top:30px;">SOFTWARE SKILLS:<br>MAYA,ZBrush,Blender,Unreal Photoshop,Adobe Premiere Pro, After Effects</p>
                     <button onclick="document.getElementById('contact-icons-row').style.display = 'flex'; this.style.display = 'none';" class="yt-btn" style="margin-top:30px; background: transparent; width: auto; cursor: pointer;">CONTACT ME</button>
                     <div id="contact-icons-row" style="display: none; gap: 20px; margin-top: 30px; justify-content: flex-start;">
-                        <a href="https://www.facebook.com/ye.yi.yi.233045" target="_blank" class="social-link" style="width:50px; height:50px;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.15 5.96C15.21 5.96 16.12 6.04 16.12 6.04V8.51H15.01C13.77 8.51 13.38 9.28 13.38 10.07V12.06H16.16L15.72 14.96H13.38V21.96C18.16 21.21 21.82 17.06 21.82 12.06C21.82 6.53 17.32 2.04 12 2.04Z"/></svg></a>
-                        <a href="https://www.instagram.com/yeee.0413?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="social-link" style="width:50px; height:50px;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M19,5A1,1 0 0,1 20,6A1,1 0 0,1 19,7A1,1 0 0,1 18,6A1,1 0 0,1 19,5Z" /></svg></a>
-                        <a href="https://youtube.com/@yeee-h3d?si=HJiVyQ6-vUbY-lUe" target="_blank" class="social-link" style="width:50px; height:50px;"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></a>
+                        <a href="https://www.facebook.com/ye.yi.yi.233045" target="_blank" class="social-link" style="width:50px; height:50px;" title="Facebook"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.15 5.96C15.21 5.96 16.12 6.04 16.12 6.04V8.51H15.01C13.77 8.51 13.38 9.28 13.38 10.07V12.06H16.16L15.72 14.96H13.38V21.96C18.16 21.21 21.82 17.06 21.82 12.06C21.82 6.53 17.32 2.04 12 2.04Z"/></svg></a>
+                        <a href="https://www.instagram.com/yeee.0413?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="social-link" style="width:50px; height:50px;" title="Instagram"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M19,5A1,1 0 0,1 20,6A1,1 0 0,1 19,7A1,1 0 0,1 18,6A1,1 0 0,1 19,5Z" /></svg></a>
+                        <a href="https://youtube.com/@yeee-h3d?si=HJiVyQ6-vUbY-lUe" target="_blank" class="social-link" style="width:50px; height:50px;" title="YouTube"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></a>
+                        <a href="https://www.artstation.com/yeee-20260203" target="_blank" class="social-link" style="width:50px; height:50px;" title="ArtStation"><svg viewBox="0 0 24 24" style="width:24px;height:24px;"><path d="M0 17.723l2.027 3.505h.001a2.424 2.424 0 0 0 2.164 1.333h13.457l-2.792-4.838H0zm24 .025c0-.484-.143-.935-.388-1.314L15.728 2.728a2.424 2.424 0 0 0-2.142-1.289H9.419L21.598 22.54l1.92-3.325c.378-.637.482-.919.482-1.467zm-11.129-3.462L7.428 4.858l-5.444 9.428h10.887z"/></svg></a>
                     </div>
                 </div>
             </div>
         `;
-        modal.style.display = 'block'; setTimeout(() => { modal.style.opacity = '1'; }, 10); document.body.style.overflow = 'hidden';
+        modal.scrollTop = 0;
+        modal.style.display = 'block';
+        setTimeout(() => { modal.style.opacity = '1'; }, 10);
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
@@ -926,9 +1080,14 @@
         const videos = modalBody.querySelectorAll('video');
         videos.forEach(v => v.pause());
 
+        currentProjectIndex = -1;
+        modalPrevBtn.style.display = 'none';
+        modalNextBtn.style.display = 'none';
+
         modal.style.opacity = '0';
         setTimeout(() => {
             modal.style.display = 'none';
+            modalContainer.classList.remove('project-modal-mode');
             document.body.style.overflow = 'auto';
             modalBody.innerHTML = '';
         }, 300);
