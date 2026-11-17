@@ -662,25 +662,43 @@
 
         /* --- 📱 響應式與手機版專屬優化 --- */
         @media (max-width: 1024px) {
+            .modal-overlay {
+                -webkit-overflow-scrolling: touch;
+            }
+
             .artstation-layout {
-                flex-direction: column;
+                display: block;
+                min-height: 0;
+                height: auto;
             }
 
             .modal-stage {
+                display: block;
+                flex: none;
                 width: 100%;
-                min-height: auto;
-                padding: 60px 20px 20px 20px;
-                order: 1;
+                height: auto;
+                min-height: 0;
+                padding: 64px 16px 24px 16px;
+                overflow: visible;
+            }
+
+            .modal-stage .modal-gallery {
+                width: 100%;
+                height: auto;
+                overflow: visible;
             }
 
             .modal-sidebar {
+                display: block;
+                flex: none;
                 width: 100%;
                 height: auto;
-                position: relative;
+                max-height: none;
+                position: static;
+                overflow: visible;
                 border-left: none;
                 border-top: 1px solid #262626;
-                padding: 30px 20px 50px 20px;
-                order: 2;
+                padding: 32px 20px 60px 20px;
             }
 
             .modal-nav-btn.prev-btn {
@@ -857,13 +875,18 @@
             }
         }
 
-        /* Modal 彈窗內的圖片間距處理 */
-        .modal-img-wrapper {
-            margin-bottom: 20px;
+        /* Modal 彈窗內的圖片間距與自適應高度處理 */
+        .modal-img-wrapper.img-loading-container {
+            height: auto;
+            min-height: 80px;
+            margin-bottom: 24px;
             border-radius: 4px;
         }
 
-        .modal-img-wrapper img {
+        .modal-img-wrapper.img-loading-container img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
             margin-bottom: 0 !important;
         }
 
@@ -1279,7 +1302,7 @@ After sketching the initial front orthographic view, I explored multiple silhoue
             {
                 id: 2,
                 order: 10,
-                visible: true,
+                visible: false,
                 title: "動態繪本-雪水消融的季節:The Last Duel",
                 titleEn: "Animatic Picture Book — After Spring, the Tamaki Family: The Last Duel",
                 type: ["storyboard"],
@@ -1522,7 +1545,7 @@ Full video below.`,
             {
                 id: 177,
                 order: 10,
-                visible: true,
+                visible: false,
                 title: "概念設計-Breaking toys-syuff MR.Potato",
                 titleEn: "Concept Design — Breaking Toys: Stuff Mr. Potato",
                 type: ["illustration", "scene"],
@@ -1808,8 +1831,8 @@ A string of serial murders targeting androids begins at a snow-mountain laborato
                         return `<video src="${file}" controls playsinline loop preload="metadata"></video>`;
                     }
                 } else {
-                    // 彈窗內的第一張圖優先，其餘延遲載入
-                    const preloadAttrs = idx === 0 ? 'fetchpriority="high" loading="eager"' : 'fetchpriority="low" loading="lazy"';
+                    // 彈窗內圖片全部設為 eager 載入，避免在固定滾動容器中因 lazy 導致後續圖片不顯示
+                    const preloadAttrs = idx === 0 ? 'fetchpriority="high" loading="eager"' : 'fetchpriority="low" loading="eager"';
                     return `
                     <div class="img-loading-container modal-img-wrapper">
                         <div class="blur-placeholder frosted-glass"></div>
